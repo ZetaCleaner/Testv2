@@ -49,6 +49,11 @@ foreach ($mftFile in $mftCsvFiles) {
     for ($i = 1; $i -lt $lines.Count; $i++) {
         $line = $lines[$i] -split ','
 
+        # **HINWEIS**: Hier Filter einfügen, um .exe zu ignorieren
+        if ($line[$extensionIndex] -match '\.exe') {
+            continue
+        }
+        
         $createdDate = $line[$createdDateIndex]
         if ($createdDate -lt $cutoffDate) {
             continue
@@ -77,6 +82,7 @@ ForEach-Object {
     $filteredData = $csvData |
         Where-Object { 
             [int]$_.FileSize -ge $FilesizeL -and $_.IsDirectory -ne "TRUE"
+            -and $_.Extension -notlike "*.exe"  # **HINWEIS**: Hier hinzufügen
         }
 
     Write-Host "Filtered records count: $($filteredData.Count)"
@@ -128,6 +134,10 @@ function ProcessJOutput {
     while ($line = $reader.ReadLine()) {
         $columns = $line -split ','
 
+        # **HINWEIS**: Hier Filter einfügen, um .exe zu ignorieren
+        if ($columns[$extensionIndex] -match '\.exe') {
+            continue
+            
         if ($parentPathIndex -ge 0 -and $nameIndex -ge 0) {
             $fullPath = $driveLetter + ($columns[$parentPathIndex] -replace '^\.', '') + "\" + $columns[$nameIndex]
             $filteredColumns = @(
@@ -211,11 +221,15 @@ $usnDump = $usnDump |
         "HardLinkChange",
         "SecurityChange",
         "DataExtend|DataTruncation"
-    )} | Sort-Object -Property * -Unique
-$usnDump | Where-Object { $_.Extension -in @('.exe', '.dll', '.zip', '.rar') } | Sort-Object -Property UpdateTimestamp -Descending | Export-Csv -Path "C:\temp\dump\Journal\Raw\Journal_Overview.csv" -NoTypeInformation
-$usnDump | Where-Object { $_.'Extension' -eq ".exe" -and $_.'UpdateReasons' -match 'FileCreate' } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-String -Width 4096 | Format-Table -HideTableHeaders | Out-File CreatedFiles.txt -Append -Width 4096
-$usnDump | Where-Object { $_.'Extension' -eq ".exe" -and $_.'UpdateReasons' -match 'FileDelete' } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-String -Width 4096 | Out-File DeletedFiles.txt -Append -Width 4096
-$usnDump | Where-Object { $_.'UpdateReasons' -match 'RenameOldName' -or $_.'UpdateReasons' -match 'RenameNewName' } | Sort-Object 'UpdateTimestamp' -Descending | Group-Object "UpdateTimestamp" | Format-Table -AutoSize @{l = "Timestamp"; e = { $_.Name } }, @{l = "Old Name"; e = { Split-Path -Path $_.Group.'FilePath'[0] -Leaf } }, @{l = "New Name"; e = { Split-Path -Path $_.Group.'FilePath'[1] -Leaf } } | Out-File -FilePath Renamed_Files.txt -Append -Width 4096
+    ) -and $_.Extension -ne ".exe"  # Ausschluss von .exe
+} | Sort-Object -Property * -Unique
+$usnDump | Where-Object { $_.Extension -in @('.dll', '.zip', '.rar') } | Sort-Object -Property UpdateTimestamp -Descending | Export-Csv -Path "C:\temp\dump\Journal\Raw\Journal_Overview.csv" -NoTypeInformation
+$usnDump | Where-Object { 
+    $_.'UpdateReasons' -match 'RenameOldName|RenameNewName' -and $_.'Extension' -ne ".exe" 
+} | Sort-Object 'UpdateTimestamp' -Descending | Group-Object "UpdateTimestamp" | 
+Format-Table -AutoSize @{l = "Timestamp"; e = { $_.Name } }, 
+    @{l = "Old Name"; e = { Split-Path -Path $_.Group.'FilePath'[0] -Leaf } }, 
+    @{l = "New Name"; e = { Split-Path -Path $_.Group.'FilePath'[1] -Leaf } } | 
+Out-File -FilePath Renamed_Files.txt -Append -Width 4096
 $usnDump | Where-Object { $_.'Extension' -in ".rar", ".zip", ".7z" } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-File Compressed.txt -Append -Width 4096
-$usnDump | Where-Object { $_.'UpdateReasons' -match "DataTruncation" -and $_.'Extension' -eq ".exe" } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-File ReplacedExe.txt -Append -Width 4096
-$usnDump | Where-Object { $_.'FilePath' -match '\?' } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-File EmptyCharacter.txt -Append -Width 4096
+$usnDump | Where-Object { $_.'FilePath' -match '\?' -and $_.'Extension' -ne ".exe"  } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-File EmptyCharacter.txt -Append -Width 4096
