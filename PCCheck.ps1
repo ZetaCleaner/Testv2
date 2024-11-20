@@ -70,7 +70,7 @@ else {
 Clear-Host
 if ((Read-Host "`n`n`n"$lang) -eq "Y") {
     Clear-Host
-    Write-Host "`n`n`n-------------------------"-ForegroundColor yellow
+    Write-Host "`n`n`n-------------------------"-ForegroundColor red
     Write-Host "|    Download Assets    |" -ForegroundColor yellow
     Write-Host "|      Please Wait      |" -ForegroundColor yellow
     Write-Host "-------------------------`n"-ForegroundColor yellow
@@ -227,10 +227,10 @@ $ShimcacheImp = Import-Csv C:\Temp\Dump\Shimcache\Shimcache.csv
 $SRUMImp = Import-Csv C:\Temp\Dump\SRUM\SRUM.csv
 $Threats = Get-Content C:\Temp\Dump\Detections.txt
 
-$eventResults = $EventsImp | Where-Object { $_.RuleTitle -like "*Defender*" -or $_.Level -eq "crit" -or $_.Level -eq "high" } | 
+$eventResults = $EventsImp | Where-Object { $_.RuleTitle -like "niger" } | 
 Select-Object @{Name = 'Timestamp'; Expression = { ($_.Timestamp -as [datetime]).ToString("dd/MM/yyyy HH:mm:ss") } }, RuleTitle |
 ForEach-Object { "$($_.Timestamp) $($_.RuleTitle)" }
-$eventResults2 = $EventsImp | Where-Object { $_.RuleTitle -eq "Credential Manager" -and $_.Details -match "Skript|Astra|Hydro|Leet-Cheats" } | 
+$eventResults2 = $EventsImp | Where-Object { $_.RuleTitle -eq "Credential Manager" -and $_.Details -match "nigers" } | 
 Select-Object @{Name = 'Timestamp'; Expression = { ($_.Timestamp -as [datetime]).ToString("dd/MM/yyyy HH:mm:ss") } }, RuleTitle |
 ForEach-Object { "$($_.Timestamp) $($_.RuleTitle)" }
 
@@ -250,14 +250,14 @@ $PrefetchImp |
 Select-Object LastRun, SourceFilename, RunCount, Volume1Serial | 
 Export-Csv "C:\temp\dump\prefetch\Prefetch_Overview.csv" -NoTypeInformation
 $AmCacheImp | 
-Where-Object { $_.Size -gt 2100000 } | 
+Where-Object { $_.Size -gt 2700000 } | 
 Select-Object LastWriteTime, FullPath, Size, FileExtension | 
 Export-Csv "C:\temp\dump\AmCache\AmCache_Overview.csv" -NoTypeInformation
 $twoMonth = (Get-Date).AddMonths(-2)
 $filtOverview = $MFTImp | Where-Object {
     [datetime]$_.CreatedTimestamp -ge $twoMonth -and 
-    [int64]$_.FileSize -gt 2100000 -and 
-    $_.Extension -ne ".dll"
+    [int64]$_.FileSize -gt 2700000 -and 
+    $_.Extension -ne ".txt"
 } | Select-Object CreatedTimestamp, FilePath, FileSize, Extension -Unique
 $filtOverview | Export-Csv -Path "C:\temp\dump\MFT\MFT_Overview.csv" -NoTypeInformation
 
