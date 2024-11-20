@@ -83,7 +83,7 @@ do {
                         Get-ChildItem -Path "C:\Temp\Scripts" -File | Where-Object { $_.Name -ne "Menu.ps1" } | ForEach-Object { Remove-Item -Path $_.FullName -Recurse -Force } | Out-Null
                         $urls = @(
                             "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/PCCheck.ps1",
-                            "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/MFT.ps1",
+                            "https://raw.githubusercontent.com/ZetaCleaner/Testv2/refs/heads/main/QuickMFT.ps1",
                             "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/Registry.ps1",
                             "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/SystemLogs.ps1",
                             "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/ProcDump.ps1",
