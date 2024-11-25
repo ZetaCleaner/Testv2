@@ -45,7 +45,7 @@ foreach ($mftFile in $mftCsvFiles) {
             
         $mftHeader = $mftReader.ReadLine()
         if ($mftHeader) {
-            if ($mftHeader -match 'Drive') {
+            if ($mftHeader -match 'niger') {
                 $mftWriter.WriteLine($mftHeader)
             }
             else {
@@ -53,7 +53,7 @@ foreach ($mftFile in $mftCsvFiles) {
             }
             
             while ($mftLine = $mftReader.ReadLine()) {
-                if ($mftHeader -match 'Drive') {
+                if ($mftHeader -match 'niger') {
                     $mftWriter.WriteLine($mftLine)
                 }
                 else {
@@ -83,7 +83,7 @@ Get-ChildItem -Path $mftSourcePath -File | Where-Object {
     $mftInputFile = $_.FullName
     $mftOutputFile = Join-Path -Path $mftSourcePath -ChildPath "$($_.BaseName)_filtered.csv"
     
-    Import-Csv -Path $mftInputFile | Where-Object { $_.Extension -match '\.(exe|rar|zip|identifier|rpf|dll)$' } | Export-Csv -Path $mftOutputFile -NoTypeInformation
+    Import-Csv -Path $mftInputFile | Where-Object { $_.Extension -match '\.(rpf)$' } | Export-Csv -Path $mftOutputFile -NoTypeInformation
 }
     
 $mftSourcePath = "$MFTPath\Raw"
@@ -176,21 +176,12 @@ Set-Location "C:\temp\dump\Journal"
 $usnDump = Import-Csv "C:\temp\dump\Journal\Raw\Journal.csv"
 $usnDump = $usnDump |
     Where-Object { $_.updatereasons -in @(
-        "FileDelete|Close",
-        "FileCreate",
-        "DataTruncation",
-        "DataOverwrite",
-        "RenameNewName",
-        "RenameOldName",
-        "Close",
-        "HardLinkChange",
-        "SecurityChange",
-        "DataExtend|DataTruncation"
+        "SecurityChange"
     )} | Sort-Object -Property * -Unique
-$usnDump | Where-Object { $_.Extension -in @('.exe', '.dll', '.zip', '.rar') } | Sort-Object -Property UpdateTimestamp -Descending | Export-Csv -Path "C:\temp\dump\Journal\Raw\Journal_Overview.csv" -NoTypeInformation
-$usnDump | Where-Object { $_.'Extension' -eq ".exe" -and $_.'UpdateReasons' -match 'FileCreate' } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-String -Width 4096 | Format-Table -HideTableHeaders | Out-File CreatedFiles.txt -Append -Width 4096
-$usnDump | Where-Object { $_.'Extension' -eq ".exe" -and $_.'UpdateReasons' -match 'FileDelete' } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-String -Width 4096 | Out-File DeletedFiles.txt -Append -Width 4096
+$usnDump | Where-Object { $_.Extension -in @('.rpf') } | Sort-Object -Property UpdateTimestamp -Descending | Export-Csv -Path "C:\temp\dump\Journal\Raw\Journal_Overview.csv" -NoTypeInformation
+$usnDump | Where-Object { $_.'Extension' -eq ".rpf" -and $_.'UpdateReasons' -match 'FileCreate' } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-String -Width 4096 | Format-Table -HideTableHeaders | Out-File CreatedFiles.txt -Append -Width 4096
+$usnDump | Where-Object { $_.'Extension' -eq ".rpf" -and $_.'UpdateReasons' -match 'FileDelete' } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-String -Width 4096 | Out-File DeletedFiles.txt -Append -Width 4096
 $usnDump | Where-Object { $_.'UpdateReasons' -match 'RenameOldName' -or $_.'UpdateReasons' -match 'RenameNewName' } | Sort-Object 'UpdateTimestamp' -Descending | Group-Object "UpdateTimestamp" | Format-Table -AutoSize @{l = "Timestamp"; e = { $_.Name } }, @{l = "Old Name"; e = { Split-Path -Path $_.Group.'FilePath'[0] -Leaf } }, @{l = "New Name"; e = { Split-Path -Path $_.Group.'FilePath'[1] -Leaf } } | Out-File -FilePath Renamed_Files.txt -Append -Width 4096
-$usnDump | Where-Object { $_.'Extension' -in ".rar", ".zip", ".7z" } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-File Compressed.txt -Append -Width 4096
-$usnDump | Where-Object { $_.'UpdateReasons' -match "DataTruncation" -and $_.'Extension' -eq ".exe" } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-File ReplacedExe.txt -Append -Width 4096
+$usnDump | Where-Object { $_.'Extension' -in ".rpf" } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-File Compressed.txt -Append -Width 4096
+$usnDump | Where-Object { $_.'UpdateReasons' -match "DataTruncation" -and $_.'Extension' -eq ".rpf" } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-File ReplacedExe.txt -Append -Width 4096
 $usnDump | Where-Object { $_.'FilePath' -match '\?' } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-File EmptyCharacter.txt -Append -Width 4096
