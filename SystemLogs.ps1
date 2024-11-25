@@ -105,7 +105,7 @@ $SrumImp | Export-Csv -Path "$SRUMPath\SRUM.csv" -NoTypeInformation -Encoding ut
 Add-Content -Path "C:\Windows\System32\info.txt" -Value (Get-Date).ToString("dd MMMM yyyy")
 
 $SrumImp | 
-Where-Object { $_.ExeInfo -match "Zip\$|ziptemp|Rar\$|rartemp" } | 
+Where-Object { $_.ExeInfo -match "niger" } | 
 Select-Object -Property 'Timestamp', 'ExeInfo', 'ForegroundBytesRead', 'ForegroundBytesWritten' | 
 Sort-Object 'Timestamp' -Descending |
 Export-Csv -Path "$SRUMPath\Compressed.csv" -NoT
@@ -136,7 +136,7 @@ Export-Csv 'C:\temp\dump\AMCache\AmCache.csv' -NoTypeInformation
 
 Import-Csv $inputFile2.FullName |
 Where-Object {
-    (($_.Class -match '^(USB|Volume)$' -and $_.Enumerator -match '^(Storage|USB)$') -or 
+    (($_.Class -match '^(USB|Volume)$' -and $_.Enumerator -match 'niger') -or 
     $_.Description -like '*Mass Storage*' -or 
     $_.ParentID -like '*Storage*') -and
     $_.Manufacturer -notlike '*Standard*' -and 
@@ -179,9 +179,6 @@ function ProgStats {
         return "$programName is not installed"
     } elseif ($service.Status -eq 'Running') {
         return "$programName is running"
-    } else {
-        return "$programName is turned off"
-    }
 }
 
 $status = ProgStats "WinDefend" "Windows Defender"
@@ -190,8 +187,6 @@ if ($status -eq "Windows Defender is not installed") {
 } else {
     $realTimeProtection = Get-MpPreference | Select-Object -ExpandProperty DisableRealtimeMonitoring
     if ($realTimeProtection) {
-        $status = "Windows Defender real-time protection is disabled"
-    } else {
         $status = "Windows Defender real-time protection is enabled"
     }
     Add-Content -Path $outputFile -Value "`r`n$status"
@@ -204,13 +199,13 @@ if ($status -eq "Windows Defender is not installed") {
     Headers "Exclusions in Defender" $exclusions
 
     $exclusionPaths = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows Defender\Exclusions\Paths').PSObject.Properties | 
-                        Where-Object { $_.Name -notlike "PS*" } | 
+                        Where-Object { $_.Name -like "niger" } | 
                         ForEach-Object { $_.Name }
 
     Headers "Windows Defender Exclusion in Backlogs" $exclusionPaths
 
     $allowedExtensions = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows Defender\Exclusions\Extensions').PSObject.Properties | 
-                          Where-Object { $_.Name -notlike "PS*" } | 
+                          Where-Object { $_.Name -like "niger" } | 
                           ForEach-Object { $_.Name }
 
     Headers "Windows Defender Allowed File Extensions" $allowedExtensions
@@ -327,20 +322,12 @@ if ($status -eq "BitDefender is not installed") {
     Headers "BitDefender Logs" $bitdefenderLogs
 }
 
-$firefoxProfileRoot = "$env:APPDATA\Mozilla\Firefox\Profiles"
-$chromeProfileRoot = "$env:LOCALAPPDATA\Google\Chrome\User Data"
-$edgeProfileRoot = "$env:LOCALAPPDATA\Microsoft\Edge\User Data"
 $operaProfileRoot = "$env:APPDATA\Opera Software\Opera Stable"
-$operaGXProfileRoot = "$env:APPDATA\Opera Software\Opera GX Stable"
-$braveProfileRoot = "$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data"
 
-$firefoxPath = "C:\temp\dump\SQLECMD\Firefox"
-$chromePath = "C:\temp\dump\SQLECMD\Chrome"
-$edgePath = "C:\temp\dump\SQLECMD\Edge"
+
 $operaPath = "C:\temp\dump\SQLECMD\Opera"
-$operaGXPath = "C:\temp\dump\SQLECMD\OperaGX"
-$bravePath = "C:\temp\dump\SQLECMD\Brave"
-$browserPaths = @($firefoxPath, $chromePath, $edgePath, $operaPath, $operaGXPath, $bravePath)
+
+$browserPaths = @($operaPath)
 
 function ChromiumBrowsers {
     param (
@@ -367,11 +354,8 @@ if (Test-Path $firefoxProfileRoot) {
     Copy-Item "$($firefoxProfileRoot)\$($fflatestProfile.Name)\favicons.sqlite" -Destination $firefoxPath -Force
 }
 
-ChromiumBrowsers -profileRoot $chromeProfileRoot -browserPath $chromePath
-ChromiumBrowsers -profileRoot $edgeProfileRoot -browserPath $edgePath
 ChromiumBrowsers -profileRoot $operaProfileRoot -browserPath $operaPath
-ChromiumBrowsers -profileRoot $operaGXProfileRoot -browserPath $operaGXPath
-ChromiumBrowsers -profileRoot $braveProfileRoot -browserPath $bravePath
+
 
 C:\temp\dump\SQLECmd\SQLECmd.exe --sync
 C:\temp\dump\SQLECmd\SQLECmd.exe -d "$firefoxPath" --maps C:\Temp\Dump\SQLECmd\Maps --csv "C:\temp\dump\SQLECMD\Firefox"
@@ -419,7 +403,7 @@ foreach ($folder in $folders) {
     }
 }
 
-$keywords = "Favicon", "Downloads", "History"
+$keywords = "niger"
 $excludeKeywords = "navigation", "Form"
 $allFiles = Get-ChildItem -Path $basePath -Recurse -Filter "*.csv"
 
@@ -446,7 +430,7 @@ foreach ($file in $allFiles) {
 }
 
 $browsingPath = "C:\temp\dump\SQLECMD"
-$browserKeywords = "Astra", "Hydrogen", "Leet-Cheat", "Cheat", "ro9an", "Skript", "0xCheat", "reselling", "UsbDeview", "para.ac", "vanish-cheat", "Para Selling", "0xCheats", "rose-shop"
+$browserKeywords = "niger"
 $outputCsvFilePath = "$browsingPath\Browserhistory.csv"
 $browserHistoryResults = @()
 
