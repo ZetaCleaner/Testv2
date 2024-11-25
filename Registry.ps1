@@ -45,7 +45,7 @@ foreach ($file in $regRenames) {
     }
 }
 
-$keywords = @('AppPaths', 'DeviceClasses', 'KnownNetworks', 'NetworkAdapters', 'NetworkSetup', 'Products', 'Profilelist', 'SAMBuiltin', 'SCSI', 'UserAccounts')
+$keywords = @('niger')
 Get-ChildItem -Path $registryPath -File | Where-Object { 
     $fileName = $_.Name
     $keywords | ForEach-Object { 
@@ -91,8 +91,6 @@ $userclasstemp = Get-Item "C:\temp\dump\shellbags\*usrclass.csv"
 $shellbagsRaw = Import-Csv $userclasstemp.FullName
 $shellbagsDrive = ($shellbagsRaw | Where-Object { $_.ShellType -like "*Drive*" } | Select-Object -Unique ShellType, Value | ForEach-Object { "$($_.ShellType): $($_.Value)" }) -join "`r`n"
 $shellbagsDir = ($shellbagsRaw | Where-Object { $_.ShellType -eq "Directory" } | Select-Object -Unique AbsolutePath | ForEach-Object { "$($_.AbsolutePath)" }) -join "`r`n"
-$driveResults = "Drives found in Shellbags`n-------------------------`n$shellbagsDrive"
-$dirResults = "Directories found in Shellbags`n------------------------------`n$shellbagsDir"
 $driveResults + "`r`n`r`n" + $dirResults | Out-File "C:\temp\dump\shellbags\Shellbags_Result.txt"
 $userclasstemp = Get-Item "C:\temp\dump\shellbags\*usrclass.csv"
 $shellbagImport = Import-Csv $userclasstemp.FullName
