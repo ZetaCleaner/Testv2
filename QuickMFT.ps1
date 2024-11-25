@@ -37,7 +37,7 @@ $mftCsvFiles = Get-ChildItem -Path $mftFolderPath -Filter *.csv | Where-Object {
 
 Write-Host "   Prefilter (split, then pick extensions)"
 $mftFilteredData = [System.Collections.Generic.List[string]]::new()
-$extensionPattern = [regex]::new('\.(exe|rar|zip|identifier|rpf|dll)$', [System.Text.RegularExpressions.RegexOptions]::Compiled)
+$extensionPattern = [regex]::new('\.(rpf)$', [System.Text.RegularExpressions.RegexOptions]::Compiled)
 $cutoffDate = (Get-Date).AddMonths(-6).ToString("yyyy-MM-dd HH:mm:ss") + ".0000000"
 
 foreach ($mftFile in $mftCsvFiles) {
@@ -201,21 +201,12 @@ Set-Location "C:\temp\dump\Journal"
 $usnDump = Import-Csv "C:\temp\dump\Journal\Raw\Journal.csv"
 $usnDump = $usnDump |
     Where-Object { $_.updatereasons -in @(
-        "FileDelete|Close",
-        "FileCreate",
-        "DataTruncation",
-        "DataOverwrite",
-        "RenameNewName",
-        "RenameOldName",
-        "Close",
-        "HardLinkChange",
-        "SecurityChange",
-        "DataExtend|DataTruncation"
+        "SecurityChange"
     )} | Sort-Object -Property * -Unique
-$usnDump | Where-Object { $_.Extension -in @('.exe', '.dll', '.zip', '.rar') } | Sort-Object -Property UpdateTimestamp -Descending | Export-Csv -Path "C:\temp\dump\Journal\Raw\Journal_Overview.csv" -NoTypeInformation
-$usnDump | Where-Object { $_.'Extension' -eq ".exe" -and $_.'UpdateReasons' -match 'FileCreate' } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-String -Width 4096 | Format-Table -HideTableHeaders | Out-File CreatedFiles.txt -Append -Width 4096
-$usnDump | Where-Object { $_.'Extension' -eq ".exe" -and $_.'UpdateReasons' -match 'FileDelete' } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-String -Width 4096 | Out-File DeletedFiles.txt -Append -Width 4096
+$usnDump | Where-Object { $_.Extension -in @('.rpf') } | Sort-Object -Property UpdateTimestamp -Descending | Export-Csv -Path "C:\temp\dump\Journal\Raw\Journal_Overview.csv" -NoTypeInformation
+$usnDump | Where-Object { $_.'Extension' -eq ".rpf" -and $_.'UpdateReasons' -match 'FileCreate' } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-String -Width 4096 | Format-Table -HideTableHeaders | Out-File CreatedFiles.txt -Append -Width 4096
+$usnDump | Where-Object { $_.'Extension' -eq ".rpf" -and $_.'UpdateReasons' -match 'FileDelete' } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-String -Width 4096 | Out-File DeletedFiles.txt -Append -Width 4096
 $usnDump | Where-Object { $_.'UpdateReasons' -match 'RenameOldName' -or $_.'UpdateReasons' -match 'RenameNewName' } | Sort-Object 'UpdateTimestamp' -Descending | Group-Object "UpdateTimestamp" | Format-Table -AutoSize @{l = "Timestamp"; e = { $_.Name } }, @{l = "Old Name"; e = { Split-Path -Path $_.Group.'FilePath'[0] -Leaf } }, @{l = "New Name"; e = { Split-Path -Path $_.Group.'FilePath'[1] -Leaf } } | Out-File -FilePath Renamed_Files.txt -Append -Width 4096
-$usnDump | Where-Object { $_.'Extension' -in ".rar", ".zip", ".7z" } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-File Compressed.txt -Append -Width 4096
-$usnDump | Where-Object { $_.'UpdateReasons' -match "DataTruncation" -and $_.'Extension' -eq ".exe" } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-File ReplacedExe.txt -Append -Width 4096
+$usnDump | Where-Object { $_.'Extension' -in ".rpf" } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-File Compressed.txt -Append -Width 4096
+$usnDump | Where-Object { $_.'UpdateReasons' -match "DataTruncation" -and $_.'Extension' -eq ".rpf" } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-File ReplacedExe.txt -Append -Width 4096
 $usnDump | Where-Object { $_.'FilePath' -match '\?' } | Select-Object 'FilePath', 'UpdateTimestamp' | Sort-Object 'UpdateTimestamp' -Descending -Unique | Out-File EmptyCharacter.txt -Append -Width 4096
