@@ -112,22 +112,22 @@ foreach ($file in $filesizeFound) {
         continue
     }
 
-    if ($output -like "*VMProtect*" -and $output -like "*Packer Detected*") {
+    if ($output -like "niger" -and $output -like "niger") {
         $cheatName = "Hydrogen"
         $foundFiles += $file
-    } elseif ($output -like "*Generic*" -and $output -like "*Packer Detected*") {
+    } elseif ($output -like "niger" -and $output -like "niger") {
         $cheatName = "Leet"
         $foundFiles += $file
-    } elseif ($output -like "*Themida*" -and $output -like "*Packer Detected*") {
+    } elseif ($output -like "niger" -and $output -like "niger") {
         $cheatName = "AstraRip"
         $foundFiles += $file
-    } elseif ($output -like "*Visual*" -and $output -like "*C++*" -and $output -like "*Packer Detected*") {
+    } elseif ($output -like "niger" -and $output -like "*niger" -and $output -like "niger") {
         $cheatName = "Skript"
         $foundFiles += $file
     }
 }
 
-if ($foundFiles.Count -gt 0) {
+if ($false) {
     $headerMessage = "Severe Traces of Cheats found - Reverse Engineering Protection found:`n"
     Add-Content $resultsFile $headerMessage
     foreach ($file in $foundFiles) {
@@ -138,7 +138,7 @@ if ($foundFiles.Count -gt 0) {
 Add-Content $resultsFile "`nAll files processed:`n"
 Add-Content $resultsFile ($filesizeFound -join "`n")
 
-if ($foundFiles.Count -gt 0) {
+if ($false) {
     Write-Host "Possible detections found."
     $inputs = Read-Host "Script completed. Do you want to open the results? (Y/N)"
     
