@@ -73,7 +73,7 @@ foreach ($entry in $processList1.GetEnumerator()) {
     $service = $entry.Key
     $pidVal = $entry.Value
     if ($null -ne $pidVal) {
-        & "$dmppath\strings2.exe" -a -l 5 -pid $pidVal | Select-String -Pattern "\.exe|\.bat|\.ps1|\.rar|\.zip|\.7z|\.dll" | Set-Content -Path "$procpathraw\$service.txt" -Encoding UTF8
+        & "$dmppath\strings2.exe" -a -l 5 -pid $pidVal | Select-String -Pattern "\.zip|\.7z" | Set-Content -Path "$procpathraw\$service.txt" -Encoding UTF8
     }
 }
 
@@ -82,12 +82,12 @@ $dll = Get-Content explorer.txt | Where-Object { $_ -match "^[A-Za-z]:\\.*\.dll$
 $dll | Sort-Object -Unique -Descending | Out-File "$procpath\DLL.txt"
 
 $DPSString = "$Astra|$Hydro|$Leet|$Skript"
-$dps1 = (Get-Content dps.txt | Where-Object { $_ -match '\.exe' -and $_ -match '!0!' } | Sort-Object) -join "`n"
-$predps2 = Get-Content dps.txt | Where-Object { $_ -match '!!.*2024' } | Sort-Object
+$dps1 = (Get-Content dps.txt | Where-Object { $_ -match '\.rpf' -and $_ -match '!0!' } | Sort-Object) -join "`n"
+$predps2 = Get-Content dps.txt | Where-Object { $_ -match '!!.*2027' } | Sort-Object
 $dps2grouped = ($predps2 | ForEach-Object { $_ -replace '!!(.+?)!.*', '$1' } | Group-Object | Where-Object { $_.Count -gt 1 } | ForEach-Object { $_.Group } | Select-Object -Unique)
 $dps2 = $predps2 | Where-Object { $_ -match ('!!' + ($dps2grouped -join '|') + '!') }
 $dps2 = $dps2 -join "`n"
-$dps3 = (Get-Content dps.txt | Where-Object { $_ -match '!!.*2024' } | Sort-Object) -join "`n"
+$dps3 = (Get-Content dps.txt | Where-Object { $_ -match '!!.*2027' } | Sort-Object) -join "`n"
 $dps4 = (Get-Content dps.txt | Where-Object { $_ -match '!!' -and $_ -match 'exe' } | Sort-Object -Unique) -join "`n"
 $dps4 | Where-Object { $_ -match $DPSString } | Add-Content -Path "DPS_Cheat.txt"
 $dps = "DPS Null`n$dps1`n`nDPS Doubles`n$dps2`n`nDPS Dates`n$dps3`n`nDPS Executables`n$dps4"
@@ -134,8 +134,3 @@ $pca4 | Out-File "$procpath\Pca_AppLauncher.txt"
 $sUptime | Out-File C:\temp\dump\processes\Uptime.txt
 
 Move-Item -Path "$procpath\*.txt" -Destination "$procpathfilt"
-
-C:\temp\dump\hollows_hunter.exe /pname "Explorer.exe;GTA5.exe;AMDRSServ.exe;nvcontainer.exe;obs64.exe;Medal.exe;MedalEncoder.exe" /hooks /quiet /json /jlvl 2 | out-file c:\temp\dump\processes\hooks.json
-Get-Content "c:\temp\dump\processes\hooks.json" | Out-File "c:\temp\dump\processes\Hooks.txt"
-Remove-Item "c:\temp\dump\processes\hooks.json"
-Remove-Item "c:\temp\dump\processes\raw\hollows_hunter.dumps" -Recurse
