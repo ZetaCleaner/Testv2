@@ -82,13 +82,13 @@ do {
                         Get-ChildItem -Path "C:\Temp\Dump" | Remove-Item -Recurse -Force | Out-Null
                         Get-ChildItem -Path "C:\Temp\Scripts" -File | Where-Object { $_.Name -ne "Menu.ps1" } | ForEach-Object { Remove-Item -Path $_.FullName -Recurse -Force } | Out-Null
                         $urls = @(
-                            "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/PCCheck.ps1",
-                            "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/MFT.ps1",
-                            "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/Registry.ps1",
-                            "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/SystemLogs.ps1",
-                            "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/ProcDump.ps1",
-                            "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/Localhost.ps1",
-                            "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/Viewer.html"
+                            "https://raw.githubusercontent.com/ZetaCleaner/Testv2/refs/heads/main/PCCheck.ps1",
+                            "https://raw.githubusercontent.com/ZetaCleaner/Testv2/refs/heads/main/MFT.ps1",
+                            "https://raw.githubusercontent.com/ZetaCleaner/Testv2/refs/heads/main/Registry.ps1",
+                            "https://raw.githubusercontent.com/ZetaCleaner/Testv2/refs/heads/main/SystemLogs.ps1",
+                            "https://raw.githubusercontent.com/ZetaCleaner/Testv2/refs/heads/main/ProcDump.ps1",
+                            "https://raw.githubusercontent.com/ZetaCleaner/Testv2/refs/heads/main/Localhost.ps1",
+                            "https://raw.githubusercontent.com/ZetaCleaner/Testv2/refs/heads/main/Viewer.html"
                         )
                         $destinationPath = "C:\Temp\Scripts"
                         foreach ($url in $urls) {
@@ -114,13 +114,13 @@ do {
                         Get-ChildItem -Path "C:\Temp\Dump" | Remove-Item -Recurse -Force | Out-Null
                         Get-ChildItem -Path "C:\Temp\Scripts" -File | Where-Object { $_.Name -ne "Menu.ps1" } | ForEach-Object { Remove-Item -Path $_.FullName -Recurse -Force } | Out-Null
                         $urls = @(
-                            "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/PCCheck.ps1",
-                            "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/QuickMFT.ps1",
-                            "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/Registry.ps1",
-                            "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/SystemLogs.ps1",
-                            "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/ProcDump.ps1",
-                            "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/Localhost.ps1",
-                            "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/Viewer.html"
+                            "https://raw.githubusercontent.com/ZetaCleaner/Testv2/refs/heads/main/PCCheck.ps1",
+                            "https://raw.githubusercontent.com/ZetaCleaner/Testv2/refs/heads/main/MFT.ps1",
+                            "https://raw.githubusercontent.com/ZetaCleaner/Testv2/refs/heads/main/Registry.ps1",
+                            "https://raw.githubusercontent.com/ZetaCleaner/Testv2/refs/heads/main/SystemLogs.ps1",
+                            "https://raw.githubusercontent.com/ZetaCleaner/Testv2/refs/heads/main/ProcDump.ps1",
+                            "https://raw.githubusercontent.com/ZetaCleaner/Testv2/refs/heads/main/Localhost.ps1",
+                            "https://raw.githubusercontent.com/ZetaCleaner/Testv2/refs/heads/main/Viewer.html"
                         )
                         $destinationPath = "C:\Temp\Scripts"
                         foreach ($url in $urls) {
@@ -156,7 +156,7 @@ do {
                         Write-Host "`n`nPerforming Advanced Filechecking (BETA)..." -ForegroundColor yellow
                         New-Item -Path "C:\Temp\Scripts" -ItemType Directory -Force | Out-Null
                         Set-Location "C:\temp"
-                        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/dot-sys/PCCheckv2/master/Packers.ps1" -OutFile "C:\Temp\Scripts\Packers.ps1"
+                        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ZetaCleaner/Testv2/refs/heads/main/Packers.ps1" -OutFile "C:\Temp\Scripts\Packers.ps1"
                         Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
                         & C:\Temp\Scripts\Packers.ps1
                         return
